@@ -23,7 +23,7 @@ pipeline {
                 // Using sshpass to copy all files from the workspace to the remote web root
                 // The '-o StrictHostKeyChecking=no' avoids a prompt for accepting the host key for the first time.
                 sh """
-                    sshpass -p ${remotePassword} scp -o StrictHostKeyChecking=no -r \
+                    sshpass -p ${remotePassword} scp -o StrictHostKeyChecking=accept-new -r \
                     ${WORKSPACE}/* ${remoteUser}@${remoteHost}:${remotePath}
                 """
             }
