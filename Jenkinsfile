@@ -20,12 +20,27 @@ pipeline {
         
         stage('Deploy to Web Server') {
             steps {
+
                 // Using sshpass to copy all files from the workspace to the remote web root
                 // The '-o StrictHostKeyChecking=no' avoids a prompt for accepting the host key for the first time.
-                sh """
-                    sshpass -p ${remotePassword} scp -o StrictHostKeyChecking=accept-new -r \
-                    ${WORKSPACE}/* ${remoteUser}@${remoteHost}:${remotePath}
-                """
+
+                // sh """
+                //     sshpass -p ${remotePassword} scp -o StrictHostKeyChecking=accept-new -r \
+                //     ${WORKSPACE}/* ${remoteUser}@${remoteHost}:${remotePath}
+                // """
+
+                // FIXED: Using withEnv to pass password securely via environment variable
+                // Using single quotes to prevent Groovy string interpolation
+                
+                // # sshpass reads password from SSHPASS environment variable
+                // # This avoids exposing the password in process lists
+
+                withEnv(["SSHPASS=${remotePassword}"]) {
+                    sh '''
+                        sshpass -e scp -o StrictHostKeyChecking=accept-new -r \
+                        ${WORKSPACE}/* ${remoteUser}@${remoteHost}:${remotePath}
+                    '''
+                }        
             }
         }
     }
