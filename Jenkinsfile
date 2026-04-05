@@ -43,7 +43,7 @@ pipeline {
                 // }        
 
                 withCredentials([sshUserPrivateKey(
-                    credentialsId: 'web-server-ssh-key',  // Create this credential in Jenkins
+                    credentialsId: 'docker-web-server-ssh-key',  // Create this credential in Jenkins
                     keyFileVariable: 'SSH_KEY_FILE',
                     usernameVariable: 'SSH_USER'
                 )]) {
