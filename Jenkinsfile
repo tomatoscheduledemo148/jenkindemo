@@ -35,12 +35,24 @@ pipeline {
                 // # sshpass reads password from SSHPASS environment variable
                 // # This avoids exposing the password in process lists
 
-                withEnv(["SSHPASS=${remotePassword}"]) {
+                // withEnv(["SSHPASS=${remotePassword}"]) {
+                //     sh '''
+                //         sshpass -e scp -o StrictHostKeyChecking=accept-new -r \
+                //         ${WORKSPACE}/* ${remoteUser}@${remoteHost}:${remotePath}
+                //     '''
+                // }        
+
+                withCredentials([sshUserPrivateKey(
+                    credentialsId: 'web-server-ssh-key',  // Create this credential in Jenkins
+                    keyFileVariable: 'SSH_KEY_FILE',
+                    usernameVariable: 'SSH_USER'
+                )]) {
                     sh '''
-                        sshpass -e scp -o StrictHostKeyChecking=accept-new -r \
+                        scp -i ${SSH_KEY_FILE} -o StrictHostKeyChecking=accept-new -r \
                         ${WORKSPACE}/* ${remoteUser}@${remoteHost}:${remotePath}
                     '''
-                }        
+                }
+
             }
         }
     }
